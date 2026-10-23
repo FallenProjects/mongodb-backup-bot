@@ -3,7 +3,7 @@ module github.com/AshokShau/mongodb-backup-bot
 go 1.27.0
 
 require (
-	github.com/AshokShau/gotdbot v0.10.1
+	github.com/AshokShau/gotdbot v0.10.2-0.20261023123153-33c7e2898d89
 	github.com/joho/godotenv v1.5.1
 	go.mongodb.org/mongo-driver/v2 v2.9.2
 )
