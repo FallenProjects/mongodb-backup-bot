@@ -28,8 +28,8 @@ func main() {
 	if err := os.MkdirAll("backups", 0700); err != nil {
 		log.Fatal(err)
 	}
+
 	opts := gotdbot.DefaultClientConfig()
-	opts.LibraryPath = tdLibrary
 	opts.ParseMode = gotdbot.ParseModeHTML
 	opts.UpdateWorkers = 2
 

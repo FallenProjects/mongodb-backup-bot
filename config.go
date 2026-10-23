@@ -9,12 +9,11 @@ import (
 )
 
 var (
-	apiID     int32
-	apiHash   string
-	token     string
-	ownerID   int64
-	pageSize  = 8
-	tdLibrary = "libtdjson.so.1.8.69"
+	apiID    int32
+	apiHash  string
+	token    string
+	ownerID  int64
+	pageSize = 8
 )
 
 func loadConfig() error {
