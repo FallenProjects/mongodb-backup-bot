@@ -1,4 +1,6 @@
 **
-!*.py
-!src/
-!pyproject.toml
+!go.mod
+!go.sum
+!*.go
+*-test.go
+*_test.go
