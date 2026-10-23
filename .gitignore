@@ -1,7 +1,7 @@
 /.idea
-.venv
-__pycache__
 .env
-/dbbackup.egg-info
-/database
-/backups
+*.so.*
+*.dylib
+*.dll
+*-test.go
+*_test.go

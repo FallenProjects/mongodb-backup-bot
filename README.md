@@ -1,70 +1,117 @@
-# MongoDB Backup Bot 📦
+# MongoDB Backup Bot
 
-A Telegram bot built using [PyTDBot](https://github.com/pytdbot/client) to backup and restore MongoDB databases.
-
-<p align="center">
-  <!-- GitHub Stars -->
-  <a href="https://github.com/AshokShau/TgMongoBot/stargazers">
-    <img src="https://img.shields.io/github/stars/AshokShau/TgMongoBot?style=for-the-badge&color=black&logo=github" alt="Stars"/>
-  </a>
-  
-  <!-- GitHub Forks -->
-  <a href="https://github.com/AshokShau/TgMongoBot/network/members">
-    <img src="https://img.shields.io/github/forks/AshokShau/TgMongoBot?style=for-the-badge&color=black&logo=github" alt="Forks"/>
-  </a>
-
-  <!-- Last Commit -->
-  <a href="https://github.com/AshokShau/TgMongoBot/commits/AshokShau">
-    <img src="https://img.shields.io/github/last-commit/AshokShau/TgMongoBot?style=for-the-badge&color=blue" alt="Last Commit"/>
-  </a>
-
-  <!-- Repo Size -->
-  <a href="https://github.com/AshokShau/TgMongoBot">
-    <img src="https://img.shields.io/github/repo-size/AshokShau/TgMongoBot?style=for-the-badge&color=success" alt="Repo Size"/>
-  </a>
-
-  <!-- Language -->
-  <a href="https://www.python.org/">
-    <img src="https://img.shields.io/badge/Written%20in-Python-orange?style=for-the-badge&logo=python" alt="Python"/>
-  </a>
-
-  <!-- License -->
-  <a href="https://github.com/AshokShau/TgMongoBot/blob/AshokShau/LICENSE">
-    <img src="https://img.shields.io/github/license/AshokShau/TgMongoBot?style=for-the-badge&color=blue" alt="License"/>
-  </a>
-
-  <!-- Open Issues -->
-  <a href="https://github.com/AshokShau/TgMongoBot/issues">
-    <img src="https://img.shields.io/github/issues/AshokShau/TgMongoBot?style=for-the-badge&color=red" alt="Issues"/>
-  </a>
-
-  <!-- Pull Requests -->
-  <a href="https://github.com/AshokShau/TgMongoBot/pulls">
-    <img src="https://img.shields.io/github/issues-pr/AshokShau/TgMongoBot?style=for-the-badge&color=purple" alt="PRs"/>
-  </a>
-
-  <!-- GitHub Workflow CI -->
-  <a href="https://github.com/AshokShau/TgMongoBot/actions">
-    <img src="https://img.shields.io/github/actions/workflow/status/AshokShau/TgMongoBot/code-fixer.yml?style=for-the-badge&label=CI&logo=github" alt="CI Status"/>
-  </a>
-</p>
-
-## Deployment
-
-<a href="https://heroku.com/deploy?template=https://github.com/AshokShau/mongodb-backup-bot">
-  <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy to Heroku">
-</a>
+A Telegram bot for MongoDB backups and restores, built with Go and [gotdbot](https://github.com/AshokShau/gotdbot). Includes formatted messages, styled inline buttons and paginated database selection.
 
 ## Features
 
-- 🔐 Backup MongoDB databases via `/mongo <URI>`
-- 💾 Supports `.gz` (default) and `.json` formats
-- 📥 Import backups by replying to a file with `/mongo {import} <URI>`
-- 🐳 Docker-ready with pre-installed MongoDB tools
-- ⚡ Fully asynchronous and lightweight
+- Back up all databases in a URI's scope or select one database.
+- Send compressed `.gz` archives or ZIP files containing BSON and metadata.
+- Restore backups by replying to their Telegram documents.
+- Wipe user databases after confirmation, excluding `admin`, `config` and `local`.
+- Remove temporary backup and download files after processing.
+
+## Docker
+
+```sh
+cp .env.example .env
+```
+
+Fill in your Telegram credentials, then start the bot:
+
+```sh
+docker compose up -d --build
+docker compose logs -f bot
+```
+
+The image includes TDLib 1.8.69 and MongoDB Database Tools 100.19.1, supports Linux amd64 and arm64, and runs as a non-root user. The `bot-data` volume holds the Telegram session and temporary files under `/data`.
+
+To build and run without Compose:
+
+```sh
+docker build -t mongodb-backup-bot .
+docker run -d --name mongodb-backup-bot --restart unless-stopped --init \
+  --env-file .env -v mongodb-bot-data:/data mongodb-backup-bot
+```
+
+MongoDB must be reachable from the container. `localhost` refers to the container itself. For Atlas, allow your server's outbound IP in the project's network access settings.
+
+## Configuration
+
+Get `API_ID` and `API_HASH` from [my.telegram.org](https://my.telegram.org), and `TOKEN` from [@BotFather](https://t.me/BotFather).
+
+| Variable                   | Default        | Description                                            |
+|----------------------------|----------------|--------------------------------------------------------|
+| `API_ID`                   | Required       | Telegram API ID                                        |
+| `API_HASH`                 | Required       | Telegram API hash                                      |
+| `TOKEN`                    | Required       | Bot token                                              |
+| `OWNER_ID`                 | `0`            | Bot owner's Telegram user ID; does not restrict access |
+| `MONGODB_BACKUP_PAGE_SIZE` | `8`            | Databases per page, from 1 to 40                       |
+
+Local execution loads `.env` without overriding existing environment variables. All users can use the bot regardless of `OWNER_ID`. Database commands are restricted to private chats.
 
 ## Commands
 
-- `/mongo <mongodb_uri>` — Create a `.gz` backup
-- `/mongo {json} <mongodb_uri>` — Create a `.json` backup
-- `/mongo {import} <mongodb_uri>` — Restore by replying to a `.gz` or `.json` backup
+| Command                 | Action                                                |
+|-------------------------|-------------------------------------------------------|
+| `/start`, `/help`       | Open help                                             |
+| `/mongo <URI>`          | Open the database menu; default format is `.gz`       |
+| `/mongo <URI> {gz}`     | Compressed MongoDB archive                            |
+| `/mongo <URI> {zip}`    | ZIP containing BSON and JSON metadata                 |
+| `/mongo <URI> {json}`   | Alias for `{zip}`, not a plain JSON export            |
+| `/mongo <URI> {import}` | Restore the document you reply to, after confirmation |
+| `/ping`                 | Latency and uptime                                    |
+| `/privacy`              | Data handling information                             |
+
+Flags can go before or after the URI. `{gz}` takes precedence over `{zip}` or `{json}`. A bare MongoDB URI also opens the menu.
+
+### Back up
+
+```text
+/mongo mongodb://user:password@host:27017/?authSource=admin
+/mongo mongodb+srv://user:password@cluster.example.com/mydb {zip}
+```
+
+Choose **Back up all** or **Select database**. A URI containing `/mydb` limits backup, selection and wipe to that database. A URI without a database path operates on the accessible databases on that server.
+
+### Restore
+
+Reply to a backup document with:
+
+```text
+/mongo mongodb://user:password@destination:27017/?authSource=admin {import}
+```
+
+Press **Restore backup**. Use a URI without a database path; database names come from the backup. Set `authSource` explicitly when needed.
+
+`.gz` files must come from `mongodump --archive --gzip`. ZIP files must have database directories at the archive root, as created by this bot. Plain JSON files are unsupported. Restore keeps existing collections and stops on error; duplicate documents or other failures can leave a partial restore.
+
+### Wipe
+
+Choose **Wipe databases**, then confirm. The bot deletes user databases in the URI's scope. If the server denies dropping a database, it attempts to drop its non-system collections. A failed wipe may be partial.
+
+## Local usage
+
+Install Go 1.27+ and [MongoDB Database Tools](https://www.mongodb.com/try/download/database-tools) with `mongodump` and `mongorestore` on `PATH`.
+
+Set your credentials in `.env`, then run:
+
+```sh
+go mod download
+go generate
+go run .
+```
+
+```sh
+go build -o bin/mongodb-backup-bot .
+go vet ./...
+```
+
+## Data handling
+
+The bot reads URIs from your Telegram command when you press a button. Keep the original command available while using its menu. URIs are omitted from backup captions and MongoDB tool logs; tools receive them through a temporary configuration file instead of process arguments.
+
+Backup and download files are removed after processing. TDLib stores its session on disk. A crash can leave temporary files in `backups` or cached downloads in `database/files`; remove abandoned files when the bot is stopped. Commands and backups remain in Telegram until deleted. Use a trusted bot deployment and allow enough disk space for your backups.
+
+## License
+
+[MIT](LICENSE)
