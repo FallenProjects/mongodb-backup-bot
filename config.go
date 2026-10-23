@@ -14,7 +14,7 @@ var (
 	token     string
 	ownerID   int64
 	pageSize  = 8
-	tdLibrary = "./libtdjson.so.1.8.69"
+	tdLibrary = "libtdjson.so.1.8.69"
 )
 
 func loadConfig() error {
