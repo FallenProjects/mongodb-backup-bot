@@ -39,14 +39,15 @@ RUN set -eu; \
 
 RUN groupadd --gid 10001 bot \
     && useradd --uid 10001 --gid bot --create-home bot \
-    && mkdir -p /data/database /data/backups \
+    && mkdir -p /app /data/database /data/backups \
+    && ln -s /data/database /app/database \
+    && ln -s /data/backups /app/backups \
     && chown -R bot:bot /data
 
 COPY --from=builder /mongodb-backup-bot /usr/local/bin/mongodb-backup-bot
-COPY --from=builder /build/libtdjson.so* /usr/local/lib/
-ENV TDLIB_LIBRARY=/usr/local/lib/libtdjson.so.1.8.69
+COPY --from=builder /build/libtdjson.so* /app/
 
-WORKDIR /data
+WORKDIR /app
 USER bot
 STOPSIGNAL SIGTERM
 
