@@ -14,9 +14,16 @@ func button(text, data string, style gotdbot.ButtonStyle) gotdbot.InlineKeyboard
 	return gotdbot.InlineKeyboardButton{Text: text, Style: style, Type: &gotdbot.InlineKeyboardButtonTypeCallback{Data: []byte(data)}}
 }
 
-func homeKeyboard() *gotdbot.ReplyMarkupInlineKeyboard {
+func homeKeyboard(current string) *gotdbot.ReplyMarkupInlineKeyboard {
+	var navigation []gotdbot.InlineKeyboardButton
+	if current != "help" {
+		navigation = append(navigation, button("Help", "help", &gotdbot.ButtonStylePrimary{}))
+	}
+	if current != "privacy" {
+		navigation = append(navigation, button("Privacy", "privacy", nil))
+	}
 	return &gotdbot.ReplyMarkupInlineKeyboard{Rows: [][]gotdbot.InlineKeyboardButton{
-		{button("Help", "help", &gotdbot.ButtonStylePrimary{}), button("Privacy", "privacy", nil)},
+		navigation,
 		{{Text: "Source code", Style: &gotdbot.ButtonStyleLink{}, Type: &gotdbot.InlineKeyboardButtonTypeUrl{Url: "https://github.com/AshokShau/mongodb-backup-bot"}}},
 	}}
 }
