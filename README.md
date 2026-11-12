@@ -110,7 +110,7 @@ go vet ./...
 
 The bot reads URIs from your Telegram command when you press a button. Keep the original command available while using its menu. URIs are omitted from backup captions and MongoDB tool logs; tools receive them through a temporary configuration file instead of process arguments.
 
-Backup and download files are removed after processing. TDLib stores its session on disk. A crash can leave temporary files in `backups` or cached downloads in `database/files`; remove abandoned files when the bot is stopped. Commands and backups remain in Telegram until deleted. Use a trusted bot deployment and allow enough disk space for your backups.
+Backup and download files are removed after processing.
 
 ## License
 

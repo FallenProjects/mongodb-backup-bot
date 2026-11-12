@@ -31,7 +31,7 @@ func main() {
 
 	opts := gotdbot.DefaultClientConfig()
 	opts.ParseMode = gotdbot.ParseModeHTML
-	opts.UpdateWorkers = 2
+	opts.UpdateWorkers = 4
 
 	c, err := gotdbot.NewClient(apiID, apiHash, token, opts)
 	if err != nil {

@@ -25,17 +25,15 @@ const helpText = "<b>MongoDB Backup Bot</b>\n\n" +
 const privacyText = "<b>Data handling</b>\n\n" +
 	"The bot reads your URI from your command when you press a button. " +
 	"Commands and backup documents remain in Telegram until you delete them.\n\n" +
-	"Backups and downloads use temporary files on the server, removed after processing. " +
-	"TDLib keeps its session on disk. A crash can leave temporary files.\n\n" +
-	"URIs are omitted from backup captions and tool logs. Use a trusted deployment."
+	"Backups and downloads use temporary files on the server, removed after processing. "
 
 func startCommand(c *gotdbot.Client, m *gotdbot.Message) error {
-	_, err := m.ReplyText(c, helpText, &gotdbot.SendMessageOpts{ReplyMarkup: homeKeyboard(), DisableWebPagePreview: true})
+	_, err := m.ReplyText(c, helpText, &gotdbot.SendMessageOpts{ReplyMarkup: homeKeyboard("help"), DisableWebPagePreview: true})
 	return err
 }
 
 func privacyCommand(c *gotdbot.Client, m *gotdbot.Message) error {
-	_, err := m.ReplyText(c, privacyText, &gotdbot.SendMessageOpts{ReplyMarkup: homeKeyboard()})
+	_, err := m.ReplyText(c, privacyText, &gotdbot.SendMessageOpts{ReplyMarkup: homeKeyboard("privacy")})
 	return err
 }
 
@@ -53,7 +51,7 @@ func helpCallback(c *gotdbot.Client, q *gotdbot.UpdateNewCallbackQuery) error {
 	if err := q.Answer(c, "", nil); err != nil {
 		return err
 	}
-	_, err := q.EditMessageText(c, helpText, &gotdbot.EditMessageTextOpts{ReplyMarkup: homeKeyboard()})
+	_, err := q.EditMessageText(c, helpText, &gotdbot.EditMessageTextOpts{ReplyMarkup: homeKeyboard("help")})
 	return err
 }
 
@@ -61,7 +59,7 @@ func privacyCallback(c *gotdbot.Client, q *gotdbot.UpdateNewCallbackQuery) error
 	if err := q.Answer(c, "", nil); err != nil {
 		return err
 	}
-	_, err := q.EditMessageText(c, privacyText, &gotdbot.EditMessageTextOpts{ReplyMarkup: homeKeyboard()})
+	_, err := q.EditMessageText(c, privacyText, &gotdbot.EditMessageTextOpts{ReplyMarkup: homeKeyboard("privacy")})
 	return err
 }
 
